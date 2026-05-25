@@ -19,7 +19,6 @@ return {
           -- Use default global node version. Prepends homebrew's version of node to path since login shell
           cmd = { "bash", "-lc", "exec vscode-eslint-language-server --stdio" },
           settings = {
-            workingDirectories = { mode = "location" },
             workingDirectory = { mode = "location" }, -- affects the process's cwd for the eslint run, not eslint walking upward for configs
           },
         },
