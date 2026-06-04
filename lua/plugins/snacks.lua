@@ -1,7 +1,37 @@
+-- Open the explorer; if the current file is git-ignored (e.g. inside
+-- node_modules), include ignored files so the explorer can reveal it.
+local function explorer(opts)
+  opts = opts or {}
+  local file = vim.api.nvim_buf_get_name(0)
+  if file ~= "" and vim.uv.fs_stat(file) then
+    vim.fn.system({ "git", "-C", vim.fn.fnamemodify(file, ":h"), "check-ignore", "--quiet", file })
+    if vim.v.shell_error == 0 then
+      opts.ignored = true
+    end
+  end
+  Snacks.explorer(opts)
+end
+
 return {
   -- Get rid of vertical indent line
   {
     "folke/snacks.nvim",
+    keys = {
+      {
+        "<leader>fe",
+        function()
+          explorer({ cwd = LazyVim.root() })
+        end,
+        desc = "Explorer Snacks (root dir)",
+      },
+      {
+        "<leader>fE",
+        function()
+          explorer()
+        end,
+        desc = "Explorer Snacks (cwd)",
+      },
+    },
     opts = function(_, opts)
       opts.indent = opts.indent or {}
       opts.indent.enabled = false
