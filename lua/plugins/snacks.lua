@@ -51,6 +51,18 @@ return {
       opts.picker.sources.grep_word.hidden = true
       opts.picker.sources.grep_word.ignored = false
 
+      opts.picker.sources.recent = opts.picker.sources.recent or {}
+      opts.picker.sources.recent.filter = opts.picker.sources.recent.filter or {}
+      local recent_filter = opts.picker.sources.recent.filter.filter
+      opts.picker.sources.recent.filter.filter = function(item, filter)
+        local file = item.file or ""
+        local stat = vim.uv.fs_stat(file)
+        return not file:find("/%.git/COMMIT_EDITMSG$")
+          and stat
+          and stat.type ~= "directory"
+          and (not recent_filter or recent_filter(item, filter))
+      end
+
       opts.picker.sources.explorer = opts.picker.sources.explorer or {}
       opts.picker.sources.explorer.hidden = true
       opts.picker.sources.explorer.ignored = false
